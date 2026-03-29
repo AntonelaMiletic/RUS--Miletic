@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hr">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.16.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Lab1 - Obrada prekida na ESP32: Laboratorijska vježba 1 – Obrada prekida na ESP32</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Lab1 - Obrada prekida na ESP32
+   </div>
+   <div id="projectbrief">Laboratorijska vjezba 1 iz razvoja ugradbenih sustava</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generirao Doxygen 1.16.1 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Traži',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('index.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Učitavam...</div>
+<div class="SRStatus" id="Searching">Tražim...</div>
+<div class="SRStatus" id="NoMatches">Nema traženih podataka</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Laboratorijska vježba 1 – Obrada prekida na ESP32 </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a></p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
+Opis zadatka</h1>
+<p>Ova laboratorijska vježba demonstrira obradu više izvora događaja na mikrokontrolerskoj platformi ESP32. <br  />
+ Sustav koristi:</p><ul>
+<li>tri tipkala kao vanjske izvore prekida</li>
+<li>periodički timer prekid</li>
+<li>HC-SR04 ultrazvučni senzor udaljenosti</li>
+<li>LED indikatore za prikaz pojedinih događaja</li>
+</ul>
+<p>Cilj vježbe je prikazati:</p><ul>
+<li>obradu više prekida</li>
+<li>definiranje prioriteta događaja</li>
+<li>minimiziranje rada unutar ISR rutina</li>
+<li>korištenje zastavica i kritičnih sekcija</li>
+<li>praćenje redoslijeda događaja pomoću logičkog analizatora</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+Funkcionalni opis sustava</h1>
+<p>Sustav koristi tri tipkala koja generiraju vanjske prekide:</p><ul>
+<li><b>HIGH</b> tipkalo – događaj visokog prioriteta</li>
+<li><b>MEDIUM</b> tipkalo – događaj srednjeg prioriteta</li>
+<li><b>LOW</b> tipkalo – događaj niskog prioriteta</li>
+</ul>
+<p>Dodatno se koristi:</p><ul>
+<li><b>timer prekid</b> koji se aktivira periodički svakih 1 sekundu</li>
+<li><b>HC-SR04 senzor</b> koji mjeri udaljenost objekta</li>
+</ul>
+<p>Ako je izmjerena udaljenost manja od zadanog praga, aktivira se <b>alarmni indikator</b>.</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+Prioriteti događaja</h1>
+<p>Događaji se obrađuju u glavnoj petlji prema sljedećem redoslijedu prioriteta:</p>
+<ol type="1">
+<li><b>TIMER</b></li>
+<li><b>HIGH</b></li>
+<li><b>MEDIUM</b></li>
+<li><b>LOW</b></li>
+</ol>
+<p>Alarm udaljenosti radi kao dodatna funkcionalnost nadzora i aktivira se kada je objekt bliže od zadanog praga.</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
+Korišteni pinovi</h1>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
+LED indikatori</h2>
+<ul>
+<li><span class="tt">GPIO 18</span> – LED_HIGH</li>
+<li><span class="tt">GPIO 19</span> – LED_MED</li>
+<li><span class="tt">GPIO 21</span> – LED_LOW</li>
+<li><span class="tt">GPIO 22</span> – LED_TIMER</li>
+<li><span class="tt">GPIO 23</span> – LED_ALERT</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
+Tipkala</h2>
+<ul>
+<li><span class="tt">GPIO 25</span> – BTN_HIGH</li>
+<li><span class="tt">GPIO 26</span> – BTN_MED</li>
+<li><span class="tt">GPIO 27</span> – BTN_LOW</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
+HC-SR04</h2>
+<ul>
+<li><span class="tt">GPIO 5</span> – TRIG</li>
+<li><span class="tt">GPIO 17</span> – ECHO</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
+Način rada programa</h1>
+<p>ISR rutine su izvedene tako da budu što kraće. <br  />
+ Njihova uloga je samo:</p><ul>
+<li>prepoznati događaj</li>
+<li>postaviti odgovarajuću zastavicu</li>
+<li>izaći iz prekidne rutine</li>
+</ul>
+<p>Na taj način se:</p><ul>
+<li>smanjuje vrijeme provedeno unutar ISR-a</li>
+<li>izbjegava nepotrebno blokiranje sustava</li>
+<li>povećava preglednost i sigurnost rada</li>
+</ul>
+<p>Stvarna obrada događaja izvodi se u <span class="tt"><a class="el" href="_lab1_8ino.html#afe461d27b9c48d5921c00d521181f12f" title="Glavna petlja programa.">loop()</a></span> funkciji. <br  />
+ U glavnoj petlji se:</p><ol type="1">
+<li>čitaju zastavice postavljene u ISR rutinama</li>
+<li>brišu zastavice unutar kritične sekcije</li>
+<li>obrađuje samo događaj najvišeg prioriteta</li>
+<li>neprekidno provjerava stanje senzora udaljenosti</li>
+</ol>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
+Debounce mehanizam</h1>
+<p>Za tipkala je implementiran <b>debounce</b> kako bi se izbjegla višestruka aktivacija prekida pri jednom pritisku tipkala.</p>
+<p>Za svako tipkalo prati se vrijeme zadnje aktivacije, a novi prekid se prihvaća tek ako je prošlo dovoljno vremena od prethodnog događaja.</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md16"></a>
+Alarm udaljenosti</h1>
+<p>HC-SR04 senzor koristi se za mjerenje udaljenosti objekta od sustava. <br  />
+ Ako je udaljenost manja od zadanog praga:</p>
+<ul>
+<li>aktivira se <span class="tt"><a class="el" href="_lab1_8ino.html#a88f47a709f7893625e9f54d55b652341">LED_ALERT</a></span></li>
+<li>u serijski monitor ispisuje se poruka o alarmu</li>
+</ul>
+<p>U ovom rješenju alarmna LED ostaje upaljena dok god traje alarmno stanje, odnosno dok je objekt unutar definiranog praga udaljenosti.</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
+Logički analizator</h1>
+<p>Za provjeru redoslijeda događaja korišten je <b>Wokwi Logic Analyzer</b>.</p>
+<p>Na analizator su spojeni izlazi LED indikatora:</p>
+<ul>
+<li><span class="tt">D0</span> – TIMER</li>
+<li><span class="tt">D1</span> – HIGH</li>
+<li><span class="tt">D2</span> – MEDIUM</li>
+<li><span class="tt">D3</span> – LOW</li>
+<li><span class="tt">D4</span> – ALERT</li>
+</ul>
+<p>Logički analizator korišten je za promatranje redoslijeda aktivacije događaja i potvrdu prioritetne logike sustava. <br  />
+ Snimka analizatora spremljena je u <span class="tt">.vcd</span> formatu.</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md20"></a>
+Primjer ispitivanja</h1>
+<p>Tijekom ispitivanja aktivirani su različiti događaji:</p><ul>
+<li>pritisak LOW tipkala</li>
+<li>pritisak MED tipkala</li>
+<li>pritisak HIGH tipkala</li>
+<li>periodički TIMER događaj</li>
+<li>aktivacija alarma približavanjem objekta senzoru</li>
+</ul>
+<p>Na temelju izlaza i logičkog analizatora može se potvrditi:</p><ul>
+<li>ispravno generiranje događaja</li>
+<li>ispravna reakcija sustava</li>
+<li>definirani redoslijed prioriteta u obradi događaja</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
+Zaključak</h1>
+<p>U ovoj laboratorijskoj vježbi uspješno je implementiran sustav za obradu više izvora događaja na ESP32 platformi.</p>
+<p>Rješenje demonstrira:</p><ul>
+<li>vanjske prekide</li>
+<li>timer prekid</li>
+<li>rad sa senzorom udaljenosti</li>
+<li>prioritizaciju događaja</li>
+<li>kratke ISR rutine</li>
+<li>korištenje kritičnih sekcija</li>
+<li>osnovnu verifikaciju rada logičkim analizatorom</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md24"></a>
+Sadržaj direktorija Lab1</h1>
+<ul>
+<li><span class="tt"><a class="el" href="_lab1_8ino.html" title="Laboratorijska vježba 1 - obrada prekida na ESP32 platformi.">Lab1.ino</a></span> – izvorni kod programa</li>
+<li><span class="tt"><a class="el" href="_r_e_a_d_m_e_8md.html">README.md</a></span> – opis rješenja i dokumentacija</li>
+<li><span class="tt">diagram.json</span> – Wokwi shema spojeva</li>
+<li><span class="tt">wokwi-logic.vcd</span> – snimka logičkog analizatora</li>
+<li><span class="tt">docs/</span> – generirana Doxygen dokumentacija </li>
+</ul>
+</div></div><!-- PageDoc -->
+<a href="doxygen_crawl.html"></a>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generirao <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.16.1 </li>
+  </ul>
+</div>
+</body>
+</html>

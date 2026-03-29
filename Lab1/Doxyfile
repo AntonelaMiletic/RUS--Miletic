@@ -1,0 +1,27 @@
+PROJECT_NAME           = "Lab1 - Obrada prekida na ESP32"
+PROJECT_BRIEF          = "Laboratorijska vjezba 1 iz razvoja ugradbenih sustava"
+OUTPUT_DIRECTORY       = docs
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = Croatian
+USE_MDFILE_AS_MAINPAGE = README.md
+
+INPUT                  = Lab1.ino README.md
+FILE_PATTERNS          = *.ino *.md
+EXTENSION_MAPPING      = ino=C++
+RECURSIVE              = NO
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_LATEX         = NO
+
+QUIET                  = YES
+WARNINGS               = YES
+OPTIMIZE_OUTPUT_FOR_C  = YES
+MARKDOWN_SUPPORT       = YES
+AUTOLINK_SUPPORT       = YES
+
+HAVE_DOT               = NO

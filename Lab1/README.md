@@ -159,5 +159,5 @@ Rješenje demonstrira:
 - `Lab1.ino` – izvorni kod programa
 - `README.md` – opis rješenja i dokumentacija
 - `diagram.json` – Wokwi shema spojeva
-- `logic_analyzer.vcd` – snimka logičkog analizatora
+- `wokwi-logic.vcd` – snimka logičkog analizatora
 - `docs/` – generirana Doxygen dokumentacija

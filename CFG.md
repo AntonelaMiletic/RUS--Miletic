@@ -2,35 +2,35 @@
 
 ```mermaid
 flowchart TD
-    A[Start] --> B[setup()]
-    B --> C[Inicijalizacija LED pinova]
-    C --> D[Inicijalizacija tipkala]
-    D --> E[Inicijalizacija HC-SR04]
+    A[Start] --> B[setup]
+    B --> C[Init LED pinova]
+    C --> D[Init tipkala]
+    D --> E[Init HC-SR04]
     E --> F[Postavljanje vanjskih prekida]
     F --> G[Postavljanje timer prekida]
-    G --> H[loop()]
+    G --> H[loop]
 
-    H --> I[Čitanje i brisanje zastavica u kritičnoj sekciji]
-    I --> J{flagTimer?}
-    J -- Da --> K[handleTimerEvent()]
-    J -- Ne --> L{flagHigh?}
-    L -- Da --> M[handleHighEvent()]
-    L -- Ne --> N{flagMed?}
-    N -- Da --> O[handleMedEvent()]
-    N -- Ne --> P{flagLow?}
-    P -- Da --> Q[handleLowEvent()]
-    P -- Ne --> R[Nema prekidnog događaja]
+    H --> I[Ucitaj i obrisi zastavice]
+    I --> J{flagTimer}
+    J -- Da --> K[Obrada timer dogadjaja]
+    J -- Ne --> L{flagHigh}
+    L -- Da --> M[Obrada high dogadjaja]
+    L -- Ne --> N{flagMed}
+    N -- Da --> O[Obrada med dogadjaja]
+    N -- Ne --> P{flagLow}
+    P -- Da --> Q[Obrada low dogadjaja]
+    P -- Ne --> R[Nema prekidnog dogadjaja]
 
-    K --> S[readDistanceCm()]
+    K --> S[Ocitaj udaljenost]
     M --> S
     O --> S
     Q --> S
     R --> S
 
-    S --> T{distance < ALERT_DISTANCE?}
-    T -- Da --> U[handleAlertEvent(distance)]
-    T -- Ne --> V[digitalWrite(LED_ALERT, LOW)]
-    U --> W[delay(100)]
+    S --> T{distance manji od ALERT_DISTANCE}
+    T -- Da --> U[Obrada alarmnog dogadjaja]
+    T -- Ne --> V[Ugasi LED_ALERT]
+    U --> W[Povratak u loop]
     V --> W
     W --> H
 
@@ -39,7 +39,7 @@ flowchart TD
     Z[ISR Low] --> Z1[Postavi flagLow]
     TT[ISR Timer] --> TT1[Postavi flagTimer]
 
-    X1 -. povratak u loop .-> H
-    Y1 -. povratak u loop .-> H
-    Z1 -. povratak u loop .-> H
-    TT1 -. povratak u loop .-> H
+    X1 -. povratak .-> H
+    Y1 -. povratak .-> H
+    Z1 -. povratak .-> H
+    TT1 -. povratak .-> H
